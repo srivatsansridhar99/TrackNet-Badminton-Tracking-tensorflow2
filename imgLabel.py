@@ -114,7 +114,7 @@ while True:
 
     elif key == ord('n'):
         if frame_no >= n_frames-1:
-            print("This is the last frame")
+            print("This is the last frame. Kindly press on the 'e' key to exit the GUI.")
             continue
         frame_no += 1
         image = go2frame(cap, frame_no, info)
