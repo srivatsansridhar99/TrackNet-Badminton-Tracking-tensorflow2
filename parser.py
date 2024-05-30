@@ -7,8 +7,8 @@ parser.add_argument('--WIDTH', type=int, default=512,
                     help='width of image input(default: 512)')
 parser.add_argument('--epochs', type=int, default=50,
                     help='number of training epochs(default: 50)')
-parser.add_argument('--load_weights', type=str, default="weights/TrackNet",
-                    help='path to load pre-trained weights(default: weights/TrackNet)')
+parser.add_argument('--load_weights', type=str, default="/content/TrackNet-Badminton-Tracking-tensorflow2/weights/TrackNet",
+                    help='path to load pre-trained weights(default: /content/TrackNet-Badminton-Tracking-tensorflow2/weights/TrackNet)')
 parser.add_argument('--sigma', type=float, default=2.5,
                     help='radius of circle generated in heat map(default: 2.5)')
 parser.add_argument('--mag', type=float, default=1.0,
@@ -20,10 +20,10 @@ parser.add_argument('--batch_size', type=int, default=2,
                     help='batch size(default: 2)')
 parser.add_argument('--frame_stack', type=int, default=3,
                     help='number of frames to be stacked(default: 3)')
-parser.add_argument('--save_weights', type=str, default='weights/TrackNet',
-                    help='path for saving trained weights(default: weights/TrackNet)')
-parser.add_argument('--match_folder', type=str, default='train_data',
-                    help='folder path of images(default: train_data)')
+parser.add_argument('--save_weights', type=str, default='/content/TrackNet-Badminton-Tracking-tensorflow2/saved_weights_1/TrackNet',
+                    help='path for saving trained weights(default: /content/TrackNet-Badminton-Tracking-tensorflow2/saved_weights_1/TrackNet)')
+parser.add_argument('--match_folder', type=str, default='/content/TrackNet-Badminton-Tracking-tensorflow2/train_data',
+                    help='folder path of images(default: /content/TrackNet-Badminton-Tracking-tensorflow2/train_data)')
 parser.add_argument('--split_ratio', type=float, default=0.9,
                     help='ratio of train-test split(default: train_data/y_data)')
 parser.add_argument('--lr', type=float, default=1.0,
