@@ -2,3 +2,7 @@ numpy
 focal-loss
 opencv-python
 tensorflow
+matplotlib
+piexif
+pandas
+

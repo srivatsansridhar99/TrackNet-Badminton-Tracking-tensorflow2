@@ -26,7 +26,7 @@ else:
 cap = cv2.VideoCapture(video_path)
 fps = int(cap.get(cv2.CAP_PROP_FPS))
 n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
+print(f'Total number of frames: {n_frames}')
 if load_csv:
     info = load_info(csv_path)
     if len(info) != n_frames:
@@ -114,7 +114,7 @@ while True:
 
     elif key == ord('n'):
         if frame_no >= n_frames-1:
-            print("This is the last frame. Kindly press on the 'e' key to exit the GUI.")
+            print("This is the last frame")
             continue
         frame_no += 1
         image = go2frame(cap, frame_no, info)

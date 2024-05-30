@@ -151,7 +151,7 @@ def data_generator(batch_size, x_list, y_list, frame_stack):
             images = [read_img(path) for path in x_list[:frame_stack]]
             hmap = read_img(y_list[frame_stack-1], hmap=True)
             continue
-        
+        print(np.array(batch_imgs).shape, len(batch_imgs), np.array(batch_hmaps).shape, len(batch_hmaps))
         yield np.array(batch_imgs), np.array(batch_hmaps)
 
 def confusion(y_pred, y_true, tol):
