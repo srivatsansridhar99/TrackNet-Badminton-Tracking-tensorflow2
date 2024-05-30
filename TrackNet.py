@@ -13,31 +13,31 @@ class ResNet_BottleNeck(keras.layers.Layer):
     super(ResNet_BottleNeck, self).__init__()
     self.bn_1 = keras.layers.BatchNormalization()
     self.active_1 = keras.layers.Activation("relu")
-    self.conv_1 = keras.layers.Conv2D(filters, kernel_size=(1, 1), strides=1, padding='same', data_format='channels_last', **conv_kwargs)
+    self.conv_1 = keras.layers.Conv2D(filters, kernel_size=(1, 1), strides=1, padding='same', data_format='channels_first', **conv_kwargs)
 
     self.bn_2 = keras.layers.BatchNormalization()
     self.active_2 = keras.layers.Activation("relu")
-    self.conv_2 = keras.layers.Conv2D(filters, kernel_size=(3, 3), strides=strides, padding='same', data_format='channels_last', **conv_kwargs)
+    self.conv_2 = keras.layers.Conv2D(filters, kernel_size=(3, 3), strides=strides, padding='same', data_format='channels_first', **conv_kwargs)
 
     self.bn_3 = keras.layers.BatchNormalization()
     self.active_3 = keras.layers.Activation("relu")
 
     if not decoder:
-      self.conv_3 = keras.layers.Conv2D(2*filters, (1, 1), strides=1, padding="same", data_format='channels_last', **conv_kwargs)
+      self.conv_3 = keras.layers.Conv2D(2*filters, (1, 1), strides=1, padding="same", data_format='channels_first', **conv_kwargs)
     else:
-      self.conv_3 = keras.layers.Conv2D(filters, (1, 1), strides=1, padding="same", data_format='channels_last', **conv_kwargs)
+      self.conv_3 = keras.layers.Conv2D(filters, (1, 1), strides=1, padding="same", data_format='channels_first', **conv_kwargs)
 
     if strides==2:
       self.short_cut = keras.Sequential([
-        keras.layers.AveragePooling2D((2, 2), strides=strides, padding='same', data_format='channels_last'),
-        keras.layers.Conv2D(2*filters, (1, 1), strides=1, padding='same', data_format='channels_last'),
+        keras.layers.AveragePooling2D((2, 2), strides=strides, padding='same', data_format='channels_first'),
+        keras.layers.Conv2D(2*filters, (1, 1), strides=1, padding='same', data_format='channels_first'),
         keras.layers.BatchNormalization()
       ])
 
     elif not decoder:
       self.short_cut = lambda x: x
     else:
-      self.short_cut = keras.layers.Conv2D(filters, (1,1), strides=1, padding='same', data_format='channels_last')
+      self.short_cut = keras.layers.Conv2D(filters, (1,1), strides=1, padding='same', data_format='channels_first')
 
   def call(self, inputs):
     x = self.bn_1(inputs)
@@ -61,19 +61,19 @@ class ResNet_Transpose(keras.layers.Layer):
     super(ResNet_Transpose, self).__init__()
     self.bn_1 = keras.layers.BatchNormalization()
     self.active_1 = keras.layers.Activation("relu")
-    self.conv_1 = keras.layers.Conv2D(filters, kernel_size=(1, 1), strides=1, padding='same', data_format='channels_last', **conv_kwargs)
+    self.conv_1 = keras.layers.Conv2D(filters, kernel_size=(1, 1), strides=1, padding='same', data_format='channels_first', **conv_kwargs)
 
     self.bn_2 = keras.layers.BatchNormalization()
     self.active_2 = keras.layers.Activation("relu")
-    self.conv_t = keras.layers.Conv2DTranspose(filters, kernel_size=(3, 3), strides=strides, padding='same', data_format='channels_last', output_padding=1, **conv_kwargs)
+    self.conv_t = keras.layers.Conv2DTranspose(filters, kernel_size=(3, 3), strides=strides, padding='same', data_format='channels_first', output_padding=1, **conv_kwargs)
 
     self.bn_3 = keras.layers.BatchNormalization()
     self.active_3 = keras.layers.Activation("relu")
-    self.conv_3 = keras.layers.Conv2D(filters, (1, 1), strides=1, padding="same", data_format='channels_last', **conv_kwargs)
+    self.conv_3 = keras.layers.Conv2D(filters, (1, 1), strides=1, padding="same", data_format='channels_first', **conv_kwargs)
 
     self.short_cut = keras.Sequential([
-        keras.layers.UpSampling2D((2, 2), interpolation='bilinear', data_format='channels_last'),
-        keras.layers.Conv2D(filters, (1,1), strides=1, padding='same', data_format='channels_last'),
+        keras.layers.UpSampling2D((2, 2), interpolation='bilinear', data_format='channels_first'),
+        keras.layers.Conv2D(filters, (1,1), strides=1, padding='same', data_format='channels_first'),
         keras.layers.BatchNormalization()
       ])
 
@@ -100,10 +100,10 @@ class ResNet_Track(keras.models.Model):
     # Initial
     # print('#### input shape', input_shape)
     self.inital = keras.Sequential([
-                  keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_last', input_shape=input_shape),
+                  keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_first', input_shape=input_shape),
                   keras.layers.BatchNormalization(),
                   keras.layers.Activation("relu"),
-                  keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_last'),
+                  keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_first'),
                   keras.layers.BatchNormalization(),
                   keras.layers.Activation("relu"),
     ])
@@ -132,13 +132,13 @@ class ResNet_Track(keras.models.Model):
     
     # Last
     self.last = keras.Sequential([
-                keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_last'),
+                keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_first'),
                 keras.layers.BatchNormalization(),
                 keras.layers.Activation("relu"),
-                keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_last'),
+                keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_first'),
                 keras.layers.BatchNormalization(),
                 keras.layers.Activation("relu"),
-                keras.layers.Conv2D(256, (3,3), padding='same', data_format='channels_last', bias_initializer=keras.initializers.constant(-3.2)),
+                keras.layers.Conv2D(256, (3,3), padding='same', data_format='channels_first', bias_initializer=keras.initializers.constant(-3.2)),
                 keras.layers.BatchNormalization(),
                 keras.layers.Activation("relu"),
                 keras.layers.Activation("softmax")
