@@ -15,9 +15,9 @@ from functools import reduce
 from collections import defaultdict
 from focal_loss import BinaryFocalLoss
 from TrackNet import ResNet_Track
-from tensorflow import keras
+import keras
 from parser import parser
-from tensorflow.keras import backend as K
+from keras import backend as K
 import logging
 
 # ======== OBTAINING TRAINING ARGS ========
@@ -47,18 +47,21 @@ handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-print(tf.config.list_physical_devices())
+# print('tf current device', tf.debugging.set_log_device_placement(True))
+tf.config.set_visible_devices([], 'GPU')
+logger.info('Setting device to cpu')
 # ====== LOAD PRE TRAINED WEIGHTS =======
-optimizer = keras.optimizers.legacy.Adam(learning_rate=lr)
-if not pre_trained:
-	model=ResNet_Track(input_shape=(FRAME_STACK, HEIGHT, WIDTH))
-	model.compile(loss=BinaryFocalLoss(gamma=2), optimizer=optimizer, metrics=[keras.metrics.BinaryAccuracy()])
-else:
-	model=ResNet_Track(input_shape=(FRAME_STACK, HEIGHT, WIDTH))
-	model.build(input_shape=(BATCH_SIZE, FRAME_STACK, HEIGHT, WIDTH))
-	model.load_weights(weights_path).expect_partial()
-	model.compile(loss=BinaryFocalLoss(gamma=2), optimizer=optimizer, metrics=[keras.metrics.BinaryAccuracy()])
-	print(model.summary())
+with tf.device('/GPU:0'):
+	optimizer = keras.optimizers.legacy.Adadelta(learning_rate=lr)
+	if not pre_trained:
+		model=ResNet_Track(input_shape=(FRAME_STACK, HEIGHT, WIDTH))
+		model.compile(loss=BinaryFocalLoss(gamma=2), optimizer=optimizer, metrics=[keras.metrics.BinaryAccuracy()])
+	else:
+		model=ResNet_Track(input_shape=(FRAME_STACK, HEIGHT, WIDTH))
+		model.build(input_shape=(BATCH_SIZE, FRAME_STACK, HEIGHT, WIDTH))
+		model.load_weights(weights_path).expect_partial()
+		model.compile(loss=BinaryFocalLoss(gamma=2), optimizer=optimizer, metrics=[keras.metrics.BinaryAccuracy()])
+		print(model.summary())
 logger.info('Beginning training......')
 match_path = training_data_path
 match_list = [os.sep.join([os.getcwd(), match_path, match]) for match in os.listdir(match_path)]
@@ -71,10 +74,11 @@ for i in range(epochs):
 	train_steps = check_steps(x_train+x_test, BATCH_SIZE, FRAME_STACK)
 	print("==========Epoch {}, Train steps: {}, Learning rate: {:.4f}==========".format(i, train_steps, float(K.get_value(model.optimizer.lr))))
 	data = data_generator(BATCH_SIZE, x_train+x_test, y_train+y_test, FRAME_STACK)
-	history = model.fit(data,
-						steps_per_epoch=train_steps,
-						epochs=1,
-						verbose=1)
+	with tf.device('/GPU:0'):
+		history = model.fit(data,
+							steps_per_epoch=train_steps,
+							epochs=1,
+							verbose=1)
 	loss = sum(history.history['loss'])
 	losses.append(loss)
 
