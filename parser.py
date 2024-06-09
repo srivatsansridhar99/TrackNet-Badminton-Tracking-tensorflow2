@@ -37,7 +37,7 @@ parser.add_argument('--patience', type=int, default=3,
                             learning rate will be reduced.(default: 3)''')
 parser.add_argument('--r_factor', type=float, default=0.1,
                     help='lr reduce factor(default: 0.1)')
-parser.add_argument('--pre_trained', type=bool, default=True,
+parser.add_argument('--pre_trained', type=bool, default=False,
                     help='whether to load pre-trained model(default: False)')
 
 # parser for imgLabel
@@ -51,3 +51,9 @@ parser.add_argument('--video_path', type=str, default='test/test.mp4',
                     help='video path to predict')
 parser.add_argument('--label_path', type=str, default='test/test.csv',
                     help='load ground truth csv for predict')
+
+# parser for video2img
+parser.add_argument('--data_load_path', type=str,
+                    help='video path to create training data')
+parser.add_argument('--data_save_path', type=str,
+                    help='path to save training data')
