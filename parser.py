@@ -37,7 +37,7 @@ parser.add_argument('--patience', type=int, default=3,
                             learning rate will be reduced.(default: 3)''')
 parser.add_argument('--r_factor', type=float, default=0.1,
                     help='lr reduce factor(default: 0.1)')
-parser.add_argument('--pre_trained', type=bool, default=False,
+parser.add_argument('--pre_trained', type=bool, default=True,
                     help='whether to load pre-trained model(default: False)')
 
 # parser for imgLabel

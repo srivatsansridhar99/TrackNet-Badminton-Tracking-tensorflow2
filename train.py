@@ -47,7 +47,7 @@ handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-# print('tf current device', tf.debugging.set_log_device_placement(True))
+print('tf current device', tf.debugging.set_log_device_placement(True))
 tf.config.set_visible_devices([], 'GPU')
 logger.info('Setting device to cpu')
 # ====== LOAD PRE TRAINED WEIGHTS =======
