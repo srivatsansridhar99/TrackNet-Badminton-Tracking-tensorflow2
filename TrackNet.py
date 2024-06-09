@@ -137,7 +137,7 @@ class ResNet_Track(keras.models.Model):
                 keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_first'),
                 keras.layers.BatchNormalization(),
                 keras.layers.Activation("relu"),
-                keras.layers.Conv2D(512, (3,3), padding='same', data_format='channels_first', bias_initializer=keras.initializers.constant(-3.2)),
+                keras.layers.Conv2D(256, (3,3), padding='same', data_format='channels_first', bias_initializer=keras.initializers.constant(-3.2)),
                 keras.layers.BatchNormalization(),
                 keras.layers.Activation("relu"),
                 keras.layers.Activation("softmax")
