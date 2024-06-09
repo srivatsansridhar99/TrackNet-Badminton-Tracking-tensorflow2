@@ -64,7 +64,7 @@ with tf.device('/GPU:0'):
 		print(model.summary())
 logger.info('Beginning training......')
 match_path = training_data_path
-match_list = [os.sep.join([os.getcwd(), match_path, match]) for match in os.listdir(match_path)]
+match_list = [os.sep.join([match_path, match]) for match in os.listdir(match_path)]
 
 wait = 0
 best_loss = float('inf')
@@ -73,8 +73,8 @@ for i in range(epochs):
 	x_train, x_test, y_train, y_test = split_train_test(match_list, ratio=train_test_split, shuffle=True)
 	train_steps = check_steps(x_train+x_test, BATCH_SIZE, FRAME_STACK)
 	print("==========Epoch {}, Train steps: {}, Learning rate: {:.4f}==========".format(i, train_steps, float(K.get_value(model.optimizer.lr))))
-	data = data_generator(BATCH_SIZE, x_train+x_test, y_train+y_test, FRAME_STACK)
 	with tf.device('/GPU:0'):
+		data = data_generator(BATCH_SIZE, x_train+x_test, y_train+y_test, FRAME_STACK)
 		history = model.fit(data,
 							steps_per_epoch=train_steps,
 							epochs=1,

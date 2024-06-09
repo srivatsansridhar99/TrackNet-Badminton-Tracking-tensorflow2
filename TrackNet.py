@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow import keras
+import keras
 
 """
 Build object tracking net work with Resnet backbone
@@ -98,7 +98,6 @@ class ResNet_Track(keras.models.Model):
   def __init__(self, input_shape, structure=[3, 3, 4, 3], num_filters=[16, 32, 64, 128]):
     super(ResNet_Track, self).__init__()
     # Initial
-    # print('#### input shape', input_shape)
     self.inital = keras.Sequential([
                   keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_first', input_shape=input_shape),
                   keras.layers.BatchNormalization(),
@@ -138,7 +137,7 @@ class ResNet_Track(keras.models.Model):
                 keras.layers.Conv2D(64, (3,3), padding='same', data_format='channels_first'),
                 keras.layers.BatchNormalization(),
                 keras.layers.Activation("relu"),
-                keras.layers.Conv2D(256, (3,3), padding='same', data_format='channels_first', bias_initializer=keras.initializers.constant(-3.2)),
+                keras.layers.Conv2D(512, (3,3), padding='same', data_format='channels_first', bias_initializer=keras.initializers.constant(-3.2)),
                 keras.layers.BatchNormalization(),
                 keras.layers.Activation("relu"),
                 keras.layers.Activation("softmax")
@@ -153,32 +152,25 @@ class ResNet_Track(keras.models.Model):
     return block
 
   def call(self, inputs):
-    print(inputs.shape, tf.size(inputs))
     x = self.inital(inputs)
-    print('#### x', x.shape)
     e1 = self.block_1(x)
     e2 = self.block_2(e1)
     e3 = self.block_3(e2)
     e4 = self.block_4(e3)
-    print('##### e4', e4.shape)
-    # print('##### conv t1', self.conv_t1)
     d_u3 = self.conv_t1(e4)
     d_u3 = tf.concat([d_u3, e3], axis=1)
     d_c3 = self.conv_d1(d_u3)
-    print('##### d_c3', d_c3.shape)
     d_u2 = self.conv_t2(d_c3)
     d_u2 = tf.concat([d_u2, e2], axis=1)
     d_c2 = self.conv_d2(d_u2)
-    print('##### d_c2', d_c2.shape)
     d_u1 = self.conv_t3(d_c2)
     d_u1 = tf.concat([d_u1, e1], axis=1)
     d_c1 = self.conv_d3(d_u1)
-    print('##### d_c1', d_c1.shape)
     outputs = self.conv_t4(d_c1)
     outputs = self.last(outputs)
-    print('##### outputs', outputs.shape)
     outputs = tf.reduce_max(outputs, axis=1)
     outputs = tf.expand_dims(outputs, axis=1)
+    print(outputs.shape)
     return outputs
 
 if __name__=='__main__':

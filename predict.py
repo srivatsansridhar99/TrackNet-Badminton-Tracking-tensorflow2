@@ -14,7 +14,7 @@ from TrackNet import ResNet_Track
 from focal_loss import BinaryFocalLoss
 from collections import deque
 from tensorflow import keras
-
+import traceback
 args = parser.parse_args()
 tol = args.tol
 mag = args.mag
@@ -27,14 +27,15 @@ load_weights = args.load_weights
 video_path = args.video_path
 csv_path = args.label_path
 
-opt = keras.optimizers.Adadelta(learning_rate=1.0)
+opt = keras.optimizers.legacy.Adadelta(learning_rate=1.0)
 model=ResNet_Track(input_shape=(3, HEIGHT, WIDTH))
 model.compile(loss=BinaryFocalLoss(gamma=2), optimizer=opt, metrics=[keras.metrics.BinaryAccuracy()])
 try:
 	model.load_weights(load_weights)
 	print("Load weights successfully")
-except:
+except Exception as e:
 	print("Fail to load weights, please modify path in parser.py --load_weights")
+	print(traceback.format_exc())
 
 if not os.path.isfile(video_path) or not video_path.endswith('.mp4'):
     print("Not a valid video path! Please modify path in parser.py --video_path")
@@ -134,7 +135,7 @@ while success:
 	if np.amax(h_pred) <= 0:
 		out.write(image)
 	else:
-		_, cnts, _ = cv2.findContours(h_pred[0].copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+		cnts, _ = cv2.findContours(h_pred[0].copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 		rects = [cv2.boundingRect(ctr) for ctr in cnts]
 		max_area_idx = 0
 		max_area = rects[max_area_idx][2] * rects[max_area_idx][3]
