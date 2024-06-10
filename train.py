@@ -48,8 +48,9 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 print('tf current device', tf.config.get_visible_devices())
+tf.debugging.set_log_device_placement(True)
 tf.config.set_visible_devices([], 'GPU')
-logger.info('Setting device to cpu')
+# logger.info('Setting device to cpu')
 # ====== LOAD PRE TRAINED WEIGHTS =======
 with tf.device('/GPU:0'):
 	optimizer = keras.optimizers.legacy.Adadelta(learning_rate=lr)
